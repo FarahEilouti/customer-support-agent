@@ -384,3 +384,78 @@ GitHub: https://github.com/FarahEilouti/customer-support-agent
 Developed as a final project for an Agentic AI training course.
 
 The project demonstrates the integration of a conversational AI model, backend business tools, persistent data storage, REST APIs, and practical evaluation techniques.
+
+## Quick Start — First-Time Demo
+
+After installing the dependencies, configuring PostgreSQL, and creating your `.env` file, follow these steps.
+
+### 1. Set up the database
+
+```powershell
+python manage.py migrate
+```
+
+### 2. Load sample data
+
+```powershell
+python manage.py seed_demo_data
+```
+
+This command creates a sample order and FAQ entries so you can test the application without manually entering database records.
+
+The demo uses fictional data and is intended for local development.
+
+### 3. Start the application
+
+```powershell
+python manage.py runserver
+```
+
+Open http://127.0.0.1:8000/ in your browser.
+
+### 4. Use the demo customer
+
+Enter the following customer email in the chat interface:
+
+```text
+customer@example.com
+```
+
+### 5. Try these example messages
+
+**Example 1 — FAQ Search**
+
+```text
+How long does standard shipping take?
+```
+
+The agent should use the FAQ search tool to retrieve the shipping information.
+
+**Example 2 — Order Lookup**
+
+```text
+What is the status of order ORD-1001?
+```
+
+The agent should retrieve the demo order information from PostgreSQL.
+
+**Example 3 — Create a Support Ticket**
+
+```text
+My order arrived damaged. Please create a support ticket.
+```
+
+The agent should create a support ticket and return its ID.
+
+### 6. View the results
+
+Successful requests should produce customer-facing responses in the chat interface.
+
+Support ticket records and tool execution logs are stored in PostgreSQL. Authorized staff users can access ticket management functionality through the application's protected endpoints.
+
+### Important Notes
+
+- A valid Gemini API key is required for live AI responses.
+- API quotas and model availability depend on the Gemini account.
+- The demo data contains fictional records only.
+- This application is a development prototype, not a publicly deployed service.
