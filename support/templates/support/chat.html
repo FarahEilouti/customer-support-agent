@@ -1,0 +1,490 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Customer Support</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: #253044;
+            background: #f5f6f8;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 35px auto;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 8px;
+        }
+
+        h2 {
+            font-size: 17px;
+            margin-top: 0;
+        }
+
+        p {
+            line-height: 1.6;
+        }
+
+        .subtitle, .hint, .status {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .guide, .chat-card {
+            background: white;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+        }
+
+        .examples {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        button {
+            font: inherit;
+            cursor: pointer;
+            border-radius: 7px;
+        }
+
+        .example-button, .secondary-button {
+            padding: 10px 12px;
+            background: white;
+            color: #2563eb;
+            border: 1px solid #bfdbfe;
+        }
+
+        .example-button:hover,
+        .secondary-button:hover {
+            background: #eff6ff;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            font: inherit;
+        }
+
+        .email-actions {
+            margin-top: 8px;
+        }
+
+        .chat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .chat-header h2 {
+            margin: 0;
+        }
+
+        .messages {
+            height: 300px;
+            overflow-y: auto;
+            background: #fafbfc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 12px;
+            border-radius: 9px;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            line-height: 1.5;
+        }
+
+        .user {
+            align-self: flex-end;
+            background: #2563eb;
+            color: white;
+        }
+
+        .assistant {
+            align-self: flex-start;
+            background: #e9edf3;
+            color: #253044;
+        }
+
+        .message-form {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .message-form input {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .send-button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .status {
+            margin-top: 12px;
+            min-height: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 10px auto;
+            }
+
+            .message-form {
+                flex-direction: column;
+            }
+
+            .message {
+                max-width: 95%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <h1>AI Customer Support</h1>
+    <p class="subtitle">
+        Get help with common questions, order tracking,
+        and support requests.
+    </p>
+
+    <!-- Section 1: Explain the service -->
+    <section class="guide">
+        <h2>What can this assistant help with?</h2>
+
+        <p>
+            I can answer questions from our FAQ database,
+            look up an order using its order number,
+            and create a support ticket if you need
+            human assistance.
+        </p>
+
+        <p><strong>Try one of these questions:</strong></p>
+
+        <div class="examples">
+            <button type="button" class="example-button"
+                data-question="How long does standard shipping take?">
+                Shipping information
+            </button>
+
+            <button type="button" class="example-button"
+                data-question="What is the status of my order ORD-1001?">
+                Track an order
+            </button>
+
+            <button type="button" class="example-button"
+                data-question="I need human assistance with a delayed order.">
+                Human support
+            </button>
+
+            <button type="button" class="example-button"
+                data-question="What can you help me with?">
+                What can you do?
+            </button>
+        </div>
+
+        <p class="hint">
+            Clicking an example fills the message box.
+            Review it, then press Send.
+        </p>
+
+        <p class="hint">
+            For order tracking, provide your order number and
+            use the email associated with that order.
+            Demo order: ORD-1001, if available in the database.
+        </p>
+
+        <p class="hint">
+            Note: This assistant cannot issue refunds,
+            change shipping details, or send emails.
+            Human support requests create tickets for staff review.
+        </p>
+    </section>
+
+    <!-- Section 2: Customer identity -->
+    <section class="guide">
+        <label for="email">Customer Email</label>
+
+        <input
+            id="email"
+            type="email"
+            placeholder="customer@example.com"
+            required
+        >
+
+        <div class="email-actions">
+            <button
+                type="button"
+                class="secondary-button"
+                id="demo-email"
+            >
+                Use demo email
+            </button>
+        </div>
+
+        <p class="hint">
+            Use the same email throughout your conversation.
+            This demonstration uses sample customer data.
+        </p>
+    </section>
+
+    <!-- Section 3: Conversation -->
+    <section class="chat-card">
+
+        <div class="chat-header">
+            <h2>Chat with Support</h2>
+
+            <button
+                type="button"
+                class="secondary-button"
+                id="new-chat"
+            >
+                New Chat
+            </button>
+        </div>
+
+        <div class="messages" id="messages">
+            <div class="message assistant">
+                Hello! How can I help you today?
+                You can choose an example above or ask your own question.
+            </div>
+        </div>
+
+        <form id="chat-form" class="message-form">
+            <input
+                id="message-input"
+                type="text"
+                maxlength="5000"
+                placeholder="Type your question..."
+                required
+            >
+
+            <button
+                type="submit"
+                class="send-button"
+                id="send-button"
+            >
+                Send
+            </button>
+        </form>
+
+        <div class="status" id="status"></div>
+    </section>
+
+</div>
+
+<script>
+    const form = document.getElementById("chat-form");
+    const emailInput = document.getElementById("email");
+    const messageInput = document.getElementById("message-input");
+    const messages = document.getElementById("messages");
+    const sendButton = document.getElementById("send-button");
+    const statusElement = document.getElementById("status");
+    const newChatButton = document.getElementById("new-chat");
+
+    let conversationId = null;
+    let activeEmail = null;
+    let isSending = false;
+
+    function addMessage(text, role) {
+        const element = document.createElement("div");
+        element.className = "message " + role;
+
+        // Remove visible Markdown bold markers.
+        // textContent prevents HTML from being executed.
+        element.textContent = text.replace(/\*\*/g, "");
+
+        messages.appendChild(element);
+        messages.scrollTop = messages.scrollHeight;
+    }
+
+    function resetConversation() {
+        conversationId = null;
+        activeEmail = null;
+        messages.innerHTML = "";
+
+        addMessage(
+            "Hello! How can I help you today?",
+            "assistant"
+        );
+
+        statusElement.textContent = "New conversation started.";
+    }
+
+    function getCookie(name) {
+        const cookies = document.cookie.split(";");
+
+        for (const cookie of cookies) {
+            const parts = cookie.trim().split("=");
+
+            if (parts[0] === name) {
+                return decodeURIComponent(parts.slice(1).join("="));
+            }
+        }
+
+        return "";
+    }
+
+    // Example buttons fill the input without sending.
+    document.querySelectorAll(".example-button")
+        .forEach((button) => {
+            button.addEventListener("click", () => {
+                messageInput.value = button.dataset.question;
+                messageInput.focus();
+            });
+        });
+
+    document.getElementById("demo-email")
+        .addEventListener("click", () => {
+            emailInput.value = "customer@example.com";
+            emailInput.focus();
+        });
+
+    newChatButton.addEventListener("click", () => {
+        if (!isSending) {
+            resetConversation();
+        }
+    });
+
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        if (isSending) {
+            return;
+        }
+
+        const email = emailInput.value.trim().toLowerCase();
+        const message = messageInput.value.trim();
+
+        if (!emailInput.checkValidity()) {
+            emailInput.reportValidity();
+            return;
+        }
+
+        if (!message) {
+            return;
+        }
+
+        // Changing the customer email starts a new conversation.
+        if (activeEmail !== null && activeEmail !== email) {
+            resetConversation();
+        }
+
+        activeEmail = email;
+
+        const payload = {
+            customer_email: email,
+            message: message
+        };
+
+        if (conversationId) {
+            payload.conversation_id = conversationId;
+        }
+
+        addMessage(message, "user");
+        messageInput.value = "";
+
+        isSending = true;
+        sendButton.disabled = true;
+        newChatButton.disabled = true;
+        emailInput.disabled = true;
+
+        statusElement.textContent =
+            "AI assistant is processing your request...";
+
+        try {
+            const response = await fetch("/api/chat/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie("csrftoken")
+                },
+                credentials: "same-origin",
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.error || "The request could not be completed."
+                );
+            }
+
+            conversationId = data.conversation_id;
+
+            addMessage(data.response, "assistant");
+
+            const tools = Array.isArray(data.tools_used)
+                ? data.tools_used.join(", ")
+                : "";
+
+            statusElement.textContent =
+                "Response time: " + data.latency_seconds +
+                "s | Tools used: " + (tools || "none");
+
+        } catch (error) {
+            addMessage(
+                "Sorry, your request could not be confirmed. " +
+                "If you requested a support ticket, please check " +
+                "with staff before retrying to avoid duplicates.",
+                "assistant"
+            );
+
+            statusElement.textContent = error.message;
+
+        } finally {
+            isSending = false;
+            sendButton.disabled = false;
+            newChatButton.disabled = false;
+            emailInput.disabled = false;
+            messageInput.focus();
+        }
+    });
+</script>
+
+</body>
+</html>
