@@ -1,38 +1,25 @@
 
 import logging
-import os
 import time
 
-from google import genai
+from django.conf import settings
 from google.genai import types
 from google.genai.errors import APIError
 
-from support.models import Conversation, Message, AgentAction
-from support.services.support_tools import (
-    lookup_order,
-    search_faq,
-    create_support_ticket,
+from support.ai.gemini_client import get_client
+from support.ai.prompts import load_system_instruction
+from support.models import Message
+from support.services.agent_tools import build_tools
+from support.services.conversation_service import (
+    get_or_create_conversation,
+    save_message,
 )
 
 
 logger = logging.getLogger(__name__)
 
 
-SYSTEM_INSTRUCTION = """
-You are a helpful customer support AI agent.
-
-Your responsibilities:
-- Answer customer questions using available tools.
-- Search the FAQ before answering questions about company policies.
-- Check order status using the order lookup tool.
-- Create support tickets when the customer explicitly requests
-  human assistance or asks to open a ticket.
-- Never invent order details or company policies.
-- Never claim a ticket was created unless the tool confirms success.
-- If information is missing, ask for clarification.
-- Keep responses clear, concise, and professional.
-"""
-
+SYSTEM_INSTRUCTION = load_system_instruction()
 
 def run_agent(
     customer_email: str,
@@ -51,107 +38,34 @@ def run_agent(
         raise ValueError("Customer email and message are required.")
 
     # 2. Get or create the conversation
-    if conversation_id:
-        conversation = Conversation.objects.get(
-            id=conversation_id,
-            customer_email__iexact=customer_email,
-        )
-    else:
-        conversation = Conversation.objects.create(
-            customer_email=customer_email,
-        )
+    conversation = get_or_create_conversation(
+        customer_email=customer_email,
+        conversation_id=conversation_id,
+    )
 
     # 3. Save the customer's message
-    Message.objects.create(
+    save_message(
         conversation=conversation,
         role=Message.Role.USER,
         content=user_message,
     )
 
-    # Track tools for THIS request only.
+    # Track tools for this request only.
     current_tools_used = []
 
-    # Keep a successful ticket result in case Gemini fails later.
-    successful_ticket = None
+    # Preserve successful ticket information if Gemini fails.
+    ticket_state = {"successful_ticket": None}
 
-    # 4. Define the tools available to Gemini
-
-    def order_tool(order_number: str) -> dict:
-        """Look up the current customer's order by order number."""
-
-        result = lookup_order(
-            order_number=order_number,
-            customer_email=customer_email,
-        )
-
-        current_tools_used.append("lookup_order")
-
-        AgentAction.objects.create(
-            conversation=conversation,
-            tool_name="lookup_order",
-            arguments={"order_number": order_number},
-            result=result,
-            success=result.get("success", False),
-        )
-
-        return result
-
-    def faq_tool(query: str) -> dict:
-        """Search the company FAQ knowledge base."""
-
-        result = search_faq(query)
-
-        current_tools_used.append("search_faq")
-
-        AgentAction.objects.create(
-            conversation=conversation,
-            tool_name="search_faq",
-            arguments={"query": query},
-            result=result,
-            success=result.get("success", False),
-        )
-
-        return result
-
-    def ticket_tool(
-        title: str,
-        description: str,
-        priority: str = "medium",
-    ) -> dict:
-        """Create a human support ticket for the current conversation."""
-
-        nonlocal successful_ticket
-
-        result = create_support_ticket(
-            conversation_id=str(conversation.id),
-            title=title,
-            description=description,
-            priority=priority,
-        )
-
-        current_tools_used.append("create_support_ticket")
-
-        AgentAction.objects.create(
-            conversation=conversation,
-            tool_name="create_support_ticket",
-            arguments={
-                "title": title,
-                "description": description,
-                "priority": priority,
-            },
-            result=result,
-            success=result.get("success", False),
-        )
-
-        if result.get("success"):
-            successful_ticket = result
-
-        return result
+    # Build tools bound to this conversation and customer.
+    tools = build_tools(
+        conversation=conversation,
+        customer_email=customer_email,
+        current_tools_used=current_tools_used,
+        ticket_state=ticket_state,
+    )
 
     # 5. Initialize Gemini
-    client = genai.Client(
-        api_key=os.environ["GEMINI_API_KEY"]
-    )
+    client = get_client()
 
     # 6. Load previous conversation messages
     history = list(
@@ -177,18 +91,11 @@ def run_agent(
 
     # 7. Configure Gemini with the three tools
     chat = client.chats.create(
-        model=os.getenv(
-            "GEMINI_MODEL",
-            "gemini-3.5-flash-lite",
-        ),
+        model=settings.GEMINI_MODEL,
         history=contents,
         config=types.GenerateContentConfig(
             system_instruction=SYSTEM_INSTRUCTION,
-            tools=[
-                order_tool,
-                faq_tool,
-                ticket_tool,
-            ],
+            tools=tools,
             automatic_function_calling=(
                 types.AutomaticFunctionCallingConfig(
                     disable=False,
@@ -214,7 +121,8 @@ def run_agent(
 
         # The ticket was created successfully in PostgreSQL,
         # but Gemini failed before sending the final response.
-        if successful_ticket is not None:
+        if ticket_state["successful_ticket"] is not None:
+            successful_ticket = ticket_state["successful_ticket"]
             answer = (
                 "Your support ticket was created successfully. "
                 "However, the AI service could not complete "
@@ -233,7 +141,7 @@ def run_agent(
     )
 
     # 9. Save the assistant's final response
-    Message.objects.create(
+    save_message(
         conversation=conversation,
         role=Message.Role.ASSISTANT,
         content=answer,

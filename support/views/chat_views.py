@@ -9,12 +9,15 @@ from rest_framework import status
 
 from support.serializers.chat_serializer import ChatRequestSerializer
 from support.services.agent_service import run_agent
-
+from rest_framework.throttling import AnonRateThrottle
 
 logger = logging.getLogger(__name__)
 
-
+class ChatRateThrottle(AnonRateThrottle):
+    scope = "chat"
 class ChatAPIView(APIView):
+
+    throttle_classes = [ChatRateThrottle]
 
     def post(self, request):
         serializer = ChatRequestSerializer(data=request.data)
@@ -52,5 +55,14 @@ class ChatAPIView(APIView):
             logger.exception("Gemini API error")
             return Response(
                 {"error": "AI service is temporarily unavailable."},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+
+        except Exception:
+            logger.exception("Unexpected error while processing chat request")
+            return Response(
+                {
+                    "error": "The service is temporarily unavailable. Please try again later."
+                },
                 status=status.HTTP_503_SERVICE_UNAVAILABLE,
             )

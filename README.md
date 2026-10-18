@@ -261,19 +261,30 @@ The application uses the following models:
 python manage.py check
 ```
 
+
 ### Automated Backend Tests
 
+Run the complete Django test suite:
+
 ```powershell
-python manage.py test support.tests.test_support_tools -v 2
+python manage.py test
 ```
 
-The recorded test run completed successfully:
+Latest verified local test run:
 
-**8 tests passed, 0 failures.**
+**17 tests passed, 0 failures.**
 
-The test cases cover FAQ search, order lookup, ticket creation, and input validation.
+The automated tests cover:
+- Order lookup and customer-email matching
+- FAQ search and input validation
+- Support ticket creation
+- Agent reliability when Gemini API requests fail
+- Chat API throttling
+- Safe handling of unexpected server errors
+- FAQ keyword matching, ranking, and inactive-entry filtering
 
-The test database requires appropriate PostgreSQL database-creation permissions. The development database role may need temporary `CREATEDB` permission when running Django tests.
+The tests use mocks for Gemini-dependent scenarios, allowing the automated suite to run without making real Gemini API requests.
+
 
 ### AI Agent Evaluation
 
@@ -321,6 +332,9 @@ Potential limitations include:
 - A limited initial evaluation dataset
 - No production load-testing results
 - The need for additional verification of duplicate-ticket prevention and recovery after interrupted requests
+
+- The chat API is currently anonymous and uses a request throttle of 20 requests per hour. Throttling limits usage but does not verify customer identity.
+- Customer email addresses are provided in requests and are not authenticated. A production version should require customer login and derive the customer's identity from the authenticated user rather than trusting a submitted email address.
 
 This project is intended as an educational prototype rather than a production-ready customer support platform.
 
