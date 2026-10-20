@@ -21,7 +21,7 @@ class ChatThrottlingTests(APITestCase):
     def tearDown(self):
         cache.clear()
 
-    @patch("support.views.chat_views.run_agent")
+    @patch("support.views.chat.chat_view.run_agent")
     def test_chat_returns_429_after_rate_limit(self, mock_run_agent):
         mock_run_agent.return_value = {
             "response": "Test response",

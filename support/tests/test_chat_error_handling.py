@@ -7,7 +7,7 @@ from rest_framework.test import APIClient
 
 class ChatErrorHandlingTests(TestCase):
 
-    @patch("support.views.chat_views.run_agent")
+    @patch("support.views.chat.chat_view.run_agent")
     def test_unexpected_error_returns_503(self, mock_run_agent):
         """Unexpected errors should return a safe response."""
 

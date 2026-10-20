@@ -269,14 +269,19 @@ or guaranteed ticket idempotency.
 The earlier evaluation results remain documented above for
 historical comparison.
 
+
 ## 11. Conclusion
 
-The system successfully selected the expected backend tools in all eight completed evaluation cases, achieving 100% tool-selection accuracy on the predefined dataset.
+The Agentic AI Customer Support & Ticket Resolution System demonstrated correct tool selection across the successfully completed evaluation scenarios.
 
-The average measured response latency was 1.391 seconds, and the average local evaluation-process memory snapshot was 80.79 MB.
+The initial evaluation completed 8 out of 8 predefined scenarios, with 100% tool-selection accuracy, an average response latency of 1.391 seconds, and average local process memory usage of 80.79 MB.
 
-All eight backend tool unit tests passed.
+The updated evaluation on October 19, 2026, expanded the dataset to 11 planned scenarios. Seven scenarios completed successfully, with 100% tool-selection accuracy among completed cases. The average successful-request latency was 3.256 seconds, and average local process memory usage was 81.36 MB.
 
-The evaluation also revealed an important operational limitation: external Gemini API quota restrictions can prevent requests from completing.
+The eighth attempted scenario was interrupted by a Gemini API HTTP 429 quota error, leaving three scenarios unexecuted. Therefore, the updated evaluation does not establish accuracy across all 11 planned scenarios.
 
-Future improvements should focus on broader evaluation datasets, error recovery, duplicate-ticket protection, and more extensive reliability testing.
+Actual support ticket creation was separately verified through the web interface and PostgreSQL database using Ticket ID 40. Automated Django testing also passed all 17 tests after the project refactoring.
+
+Overall, the results demonstrate reliable backend tool execution and correct tool routing in the tested scenarios. The main limitations are the small evaluation dataset, external Gemini API quota restrictions, unverified customer identity, and the absence of guaranteed ticket idempotency.
+
+Future improvements should focus on customer authentication, broader evaluation coverage, duplicate-ticket prevention, and production-level reliability testing.

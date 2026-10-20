@@ -1,11 +1,9 @@
 from django.urls import path
 
-from support.views.chat_views import ChatAPIView
+from support.views.chat.chat_view import ChatAPIView
 
-from support.views.ticket_views import (
-    TicketListAPIView,
-    TicketDetailAPIView,
-)
+from support.views.support.ticket_list_view import TicketListAPIView
+from support.views.support.ticket_detail_view import TicketDetailAPIView
 
 
 urlpatterns = [

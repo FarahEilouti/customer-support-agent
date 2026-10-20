@@ -18,7 +18,7 @@ os.environ.setdefault(
 )
 django.setup()
 
-from support.services.agent_service import run_agent
+from support.services.chat.agent_service import run_agent
 
 
 TEST_CASES = [
@@ -110,7 +110,7 @@ def run_evaluation():
     print("=" * 60)
 
     with patch(
-        "support.services.agent_tools.create_support_ticket",
+        "support.services.chat.agent_tools.create_support_ticket",
         return_value={
             "success": False,
             "error": "Ticket creation disabled during evaluation.",

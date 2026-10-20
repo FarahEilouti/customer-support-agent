@@ -341,40 +341,68 @@ This project is intended as an educational prototype rather than a production-re
 ## 12. Project Structure
 
 ```text
+
 customer-support-agent/
-|
-|-- config/
-|   |-- settings.py
-|   |-- urls.py
-|
-|-- support/
-|   |-- models.py
-|   |-- urls.py
-|   |-- services/
-|   |   |-- agent_service.py
-|   |   |-- support_tools.py
-|   |-- views/
-|   |   |-- chat_views.py
-|   |   |-- ticket_views.py
-|   |   |-- frontend_views.py
-|   |-- templates/
-|   |   |-- support/
-|   |       |-- chat.html
-|   |-- tests/
-|       |-- test_support_tools.py
-|
-|-- scripts/
-|   |-- evaluate_agent.py
-|
-|-- evaluation/
-|
-|-- docs/
-|   |-- PERFORMANCE_EVALUATION.md
-|
-|-- .env.example
-|-- requirements.txt
-|-- manage.py
-|-- README.md
+│
+├── config/
+│   ├── settings.py
+│   └── urls.py
+│
+├── support/
+│   ├── models/
+│   │   ├── order.py
+│   │   ├── faq_entry.py
+│   │   ├── conversation.py
+│   │   ├── message.py
+│   │   ├── support_ticket.py
+│   │   └── agent_action.py
+│   │
+│   ├── ai/
+│   │   ├── gemini_client.py
+│   │   └── prompts/
+│   │       └── support_agent.md
+│   │
+│   ├── services/
+│   │   ├── chat/
+│   │   │   ├── agent_service.py
+│   │   │   ├── agent_tools.py
+│   │   │   └── conversation_service.py
+│   │   │
+│   │   └── support/
+│   │       ├── order_lookup.py
+│   │       ├── faq_search.py
+│   │       └── ticket_creation.py
+│   │
+│   ├── views/
+│   │   ├── chat/
+│   │   │   ├── chat_view.py
+│   │   │   └── frontend_view.py
+│   │   │
+│   │   └── support/
+│   │       ├── ticket_list_view.py
+│   │       └── ticket_detail_view.py
+│   │
+│   ├── serializers/
+│   ├── templates/
+│   │   └── support/
+│   │       └── chat.html
+│   ├── tests/
+│   ├── admin.py
+│   └── urls.py
+│
+├── scripts/
+│   └── evaluate_agent.py
+│
+├── evaluation/
+│
+├── docs/
+│   └── PERFORMANCE_EVALUATION.md
+│
+├── .env.example
+├── requirements.txt
+├── manage.py
+└── README.md
+
 ```
 
 ## 13. Future Improvements

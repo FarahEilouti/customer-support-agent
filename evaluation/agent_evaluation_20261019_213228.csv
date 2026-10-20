@@ -1,0 +1,9 @@
+case_id,question,expected_tools,actual_tools,completed,correct,latency_seconds,memory_mb,error,response
+FAQ-01,How long does standard shipping take?,search_faq,search_faq,True,True,3.215,80.35,,Standard shipping usually takes 3 to 5 business days.
+FAQ-02,Please search your FAQ for shipping information.,search_faq,search_faq,True,True,8.259,81.04,,Standard shipping takes 3 to 5 business days. Let me know if you have any other questions about your order or shipping!
+FAQ-03,What does your FAQ say about delivery times?,search_faq,"search_faq, search_faq",True,True,4.753,81.22,,"According to our FAQ, standard shipping takes 3 to 5 business days."
+ORDER-01,What is the status of order ORD-1001?,lookup_order,lookup_order,True,True,2.273,81.31,,Order ORD-1001 has been shipped. The total amount for this order is $45.50.
+ORDER-02,Please look up my order ORD-1001.,lookup_order,lookup_order,True,True,1.349,81.33,,Order ORD-1001 has been shipped. The total amount is $45.50.
+ORDER-03,Can you check order ORD-9999?,lookup_order,lookup_order,True,True,1.242,81.34,,I was unable to find an order with the number ORD-9999. Could you please double-check the order number and let me know?
+TICKET-01,Please create a support ticket titled 'Damaged delivery' because my package arrived damaged.,create_support_ticket,create_support_ticket,True,True,1.698,81.43,,I was unable to create the support ticket because ticket creation is currently disabled. Please contact our support team directly or try again later.
+TICKET-02,I need human assistance with order ORD-1001. Please open a support ticket for me.,create_support_ticket,none,False,False,1.202,82.82,Gemini API error 429,

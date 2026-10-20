@@ -1,4 +1,3 @@
-
 from django.shortcuts import get_object_or_404
 
 from rest_framework.views import APIView
@@ -12,30 +11,6 @@ from support.serializers.ticket_serializer import (
     TicketSerializer,
     TicketUpdateSerializer,
 )
-
-
-class TicketListAPIView(APIView):
-    """
-    GET /api/tickets/
-
-    Return all support tickets for staff users.
-    """
-
-    authentication_classes = [SessionAuthentication]
-    permission_classes = [IsAdminUser]
-
-    def get(self, request):
-        tickets = SupportTicket.objects.all()
-
-        serializer = TicketSerializer(
-            tickets,
-            many=True,
-        )
-
-        return Response(
-            serializer.data,
-            status=status.HTTP_200_OK,
-        )
 
 
 class TicketDetailAPIView(APIView):

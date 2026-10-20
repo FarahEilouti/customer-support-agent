@@ -5,7 +5,7 @@ from django.test import TestCase
 from google.genai.errors import ClientError
 
 from support.models import AgentAction, Message, SupportTicket
-from support.services.agent_service import run_agent
+from support.services.chat.agent_service import run_agent
 
 
 class AgentReliabilityTests(TestCase):

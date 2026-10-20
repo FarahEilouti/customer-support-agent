@@ -2,7 +2,7 @@
 from django.test import TestCase
 
 from support.models import FAQEntry
-from support.services.support_tools import search_faq
+from support.services.support.faq_search import search_faq
 
 
 class FAQSearchTests(TestCase):

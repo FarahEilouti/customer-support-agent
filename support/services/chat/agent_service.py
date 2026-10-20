@@ -9,8 +9,8 @@ from google.genai.errors import APIError
 from support.ai.gemini_client import get_client
 from support.ai.prompts import load_system_instruction
 from support.models import Message
-from support.services.agent_tools import build_tools
-from support.services.conversation_service import (
+from support.services.chat.agent_tools import build_tools
+from support.services.chat.conversation_service import (
     get_or_create_conversation,
     save_message,
 )

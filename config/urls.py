@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from support.views.frontend_views import chat_page
+from support.views.chat.frontend_view import chat_page
 
 
 urlpatterns = [

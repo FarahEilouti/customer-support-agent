@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from support.serializers.chat_serializer import ChatRequestSerializer
-from support.services.agent_service import run_agent
+from support.services.chat.agent_service import run_agent
 from rest_framework.throttling import AnonRateThrottle
 
 logger = logging.getLogger(__name__)

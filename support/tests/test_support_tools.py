@@ -8,11 +8,9 @@ from support.models import (
     SupportTicket,
 )
 
-from support.services.support_tools import (
-    lookup_order,
-    search_faq,
-    create_support_ticket,
-)
+from support.services.support.order_lookup import lookup_order
+from support.services.support.faq_search import search_faq
+from support.services.support.ticket_creation import create_support_ticket
 
 
 class OrderToolTests(TestCase):
