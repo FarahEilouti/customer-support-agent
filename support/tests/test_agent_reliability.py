@@ -5,7 +5,7 @@ from django.test import TestCase
 from google.genai.errors import ClientError
 
 from support.models import AgentAction, Message, SupportTicket
-from support.services.agent_service import run_agent
+from support.services.chat.agent_service import run_agent
 
 
 class AgentReliabilityTests(TestCase):
@@ -13,7 +13,7 @@ class AgentReliabilityTests(TestCase):
     def setUp(self):
         self.email = "customer@example.com"
 
-    @patch("support.services.agent_service.genai.Client")
+    @patch("support.ai.gemini_client.genai.Client")
     def test_ticket_confirmation_when_gemini_fails(self, mock_client):
         """
         A ticket is created, then Gemini fails.
@@ -70,7 +70,7 @@ class AgentReliabilityTests(TestCase):
             ).exists()
         )
 
-    @patch("support.services.agent_service.genai.Client")
+    @patch("support.ai.gemini_client.genai.Client")
     def test_api_failure_without_ticket_is_raised(self, mock_client):
         """
         Gemini fails before executing any tool.

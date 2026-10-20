@@ -190,14 +190,98 @@ The tests used mocks and did not consume real Gemini API requests.
 
 **Limitation:** These tests do not establish full idempotency or prevent duplicate tickets across repeated customer requests.
 
-## 10. Conclusion
+## 10. Updated Evaluation — October 19, 2026
 
-The system successfully selected the expected backend tools in all eight completed evaluation cases, achieving 100% tool-selection accuracy on the predefined dataset.
+### Evaluation Scope
 
-The average measured response latency was 1.391 seconds, and the average local evaluation-process memory snapshot was 80.79 MB.
+An updated evaluation was conducted using 11 predefined scenarios:
 
-All eight backend tool unit tests passed.
+- 3 FAQ search scenarios
+- 3 order lookup scenarios
+- 2 support ticket creation scenarios
+- 1 ambiguous customer request
+- 2 general conversation scenarios
 
-The evaluation also revealed an important operational limitation: external Gemini API quota restrictions can prevent requests from completing.
+Real Gemini API requests were used to evaluate tool selection.
 
-Future improvements should focus on broader evaluation datasets, error recovery, duplicate-ticket protection, and more extensive reliability testing.
+Ticket creation was mocked during this evaluation to prevent
+the creation of real support tickets. Therefore, the ticket
+creation scenarios measure tool selection, not successful
+database ticket creation.
+
+### Results
+
+| Metric | Result |
+|---|---|
+| Planned scenarios | 11 |
+| Attempted scenarios | 8 |
+| Completed scenarios | 7 |
+| Correct tool selections | 7 |
+| Tool selection accuracy (completed cases only) | 100% |
+| Gemini API failures | 1 |
+| Average completed-request latency | 3.256 seconds |
+| Average local process memory | 81.36 MB |
+
+The three FAQ scenarios, three order lookup scenarios, and
+TICKET-01 completed with the expected tool selections.
+
+FAQ-03 invoked the FAQ search tool twice. Repeated calls to the
+same tool were treated as one unique tool selection for accuracy.
+
+TICKET-02 failed due to Gemini API error 429 (RESOURCE_EXHAUSTED).
+The evaluation stopped automatically to avoid further API failures.
+
+AMBIGUOUS-01, GENERAL-01, and GENERAL-02 were not executed
+during this run.
+
+### Ticket Creation Verification
+
+Ticket creation was also verified separately through the actual
+web interface and PostgreSQL database.
+
+Ticket ID 40 was successfully created with:
+
+- Title: Ticket creation verification
+- Priority: medium
+- Status: open
+
+The corresponding successful create_support_ticket action was
+recorded in AgentAction, and the related conversation contained
+four saved messages.
+
+This verifies actual ticket creation separately from the
+mocked tool-selection evaluation.
+
+### Interpretation and Limitations
+
+The agent selected the expected tools in all seven completed
+scenarios. However, this result does not demonstrate 100%
+accuracy across all 11 planned scenarios or across real-world
+customer requests.
+
+The incomplete evaluation was caused by an external Gemini API
+quota error, not an observed incorrect tool selection.
+
+The evaluation uses a small predefined dataset and does not
+measure production concurrency, end-to-end answer quality,
+or guaranteed ticket idempotency.
+
+The earlier evaluation results remain documented above for
+historical comparison.
+
+
+## 11. Conclusion
+
+The Agentic AI Customer Support & Ticket Resolution System demonstrated correct tool selection across the successfully completed evaluation scenarios.
+
+The initial evaluation completed 8 out of 8 predefined scenarios, with 100% tool-selection accuracy, an average response latency of 1.391 seconds, and average local process memory usage of 80.79 MB.
+
+The updated evaluation on October 19, 2026, expanded the dataset to 11 planned scenarios. Seven scenarios completed successfully, with 100% tool-selection accuracy among completed cases. The average successful-request latency was 3.256 seconds, and average local process memory usage was 81.36 MB.
+
+The eighth attempted scenario was interrupted by a Gemini API HTTP 429 quota error, leaving three scenarios unexecuted. Therefore, the updated evaluation does not establish accuracy across all 11 planned scenarios.
+
+Actual support ticket creation was separately verified through the web interface and PostgreSQL database using Ticket ID 40. Automated Django testing also passed all 17 tests after the project refactoring.
+
+Overall, the results demonstrate reliable backend tool execution and correct tool routing in the tested scenarios. The main limitations are the small evaluation dataset, external Gemini API quota restrictions, unverified customer identity, and the absence of guaranteed ticket idempotency.
+
+Future improvements should focus on customer authentication, broader evaluation coverage, duplicate-ticket prevention, and production-level reliability testing.

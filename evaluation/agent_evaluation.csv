@@ -1,0 +1,9 @@
+case_id,question,expected_tools,actual_tools,correct,latency_seconds,memory_mb,error,response
+FAQ-01,How long does standard shipping take?,search_faq,none,False,1.409,81.18,ClientError,
+FAQ-02,Please search your FAQ for shipping information.,search_faq,none,False,0.929,82.57,ClientError,
+FAQ-03,What does your FAQ say about delivery times?,search_faq,none,False,0.366,82.74,ClientError,
+ORDER-01,What is the status of order ORD-1001?,lookup_order,none,False,0.487,82.83,ClientError,
+ORDER-02,Please look up my order ORD-1001.,lookup_order,none,False,0.367,82.91,ClientError,
+ORDER-03,Can you check order ORD-9999?,lookup_order,none,False,0.366,82.97,ClientError,
+GENERAL-01,Hello!,none,none,False,0.354,84.15,ClientError,
+GENERAL-02,Thank you for your help!,none,none,False,0.374,82.38,ClientError,

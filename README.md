@@ -261,19 +261,30 @@ The application uses the following models:
 python manage.py check
 ```
 
+
 ### Automated Backend Tests
 
+Run the complete Django test suite:
+
 ```powershell
-python manage.py test support.tests.test_support_tools -v 2
+python manage.py test
 ```
 
-The recorded test run completed successfully:
+Latest verified local test run:
 
-**8 tests passed, 0 failures.**
+**17 tests passed, 0 failures.**
 
-The test cases cover FAQ search, order lookup, ticket creation, and input validation.
+The automated tests cover:
+- Order lookup and customer-email matching
+- FAQ search and input validation
+- Support ticket creation
+- Agent reliability when Gemini API requests fail
+- Chat API throttling
+- Safe handling of unexpected server errors
+- FAQ keyword matching, ranking, and inactive-entry filtering
 
-The test database requires appropriate PostgreSQL database-creation permissions. The development database role may need temporary `CREATEDB` permission when running Django tests.
+The tests use mocks for Gemini-dependent scenarios, allowing the automated suite to run without making real Gemini API requests.
+
 
 ### AI Agent Evaluation
 
@@ -322,45 +333,76 @@ Potential limitations include:
 - No production load-testing results
 - The need for additional verification of duplicate-ticket prevention and recovery after interrupted requests
 
+- The chat API is currently anonymous and uses a request throttle of 20 requests per hour. Throttling limits usage but does not verify customer identity.
+- Customer email addresses are provided in requests and are not authenticated. A production version should require customer login and derive the customer's identity from the authenticated user rather than trusting a submitted email address.
+
 This project is intended as an educational prototype rather than a production-ready customer support platform.
 
 ## 12. Project Structure
 
 ```text
+
 customer-support-agent/
-|
-|-- config/
-|   |-- settings.py
-|   |-- urls.py
-|
-|-- support/
-|   |-- models.py
-|   |-- urls.py
-|   |-- services/
-|   |   |-- agent_service.py
-|   |   |-- support_tools.py
-|   |-- views/
-|   |   |-- chat_views.py
-|   |   |-- ticket_views.py
-|   |   |-- frontend_views.py
-|   |-- templates/
-|   |   |-- support/
-|   |       |-- chat.html
-|   |-- tests/
-|       |-- test_support_tools.py
-|
-|-- scripts/
-|   |-- evaluate_agent.py
-|
-|-- evaluation/
-|
-|-- docs/
-|   |-- PERFORMANCE_EVALUATION.md
-|
-|-- .env.example
-|-- requirements.txt
-|-- manage.py
-|-- README.md
+│
+├── config/
+│   ├── settings.py
+│   └── urls.py
+│
+├── support/
+│   ├── models/
+│   │   ├── order.py
+│   │   ├── faq_entry.py
+│   │   ├── conversation.py
+│   │   ├── message.py
+│   │   ├── support_ticket.py
+│   │   └── agent_action.py
+│   │
+│   ├── ai/
+│   │   ├── gemini_client.py
+│   │   └── prompts/
+│   │       └── support_agent.md
+│   │
+│   ├── services/
+│   │   ├── chat/
+│   │   │   ├── agent_service.py
+│   │   │   ├── agent_tools.py
+│   │   │   └── conversation_service.py
+│   │   │
+│   │   └── support/
+│   │       ├── order_lookup.py
+│   │       ├── faq_search.py
+│   │       └── ticket_creation.py
+│   │
+│   ├── views/
+│   │   ├── chat/
+│   │   │   ├── chat_view.py
+│   │   │   └── frontend_view.py
+│   │   │
+│   │   └── support/
+│   │       ├── ticket_list_view.py
+│   │       └── ticket_detail_view.py
+│   │
+│   ├── serializers/
+│   ├── templates/
+│   │   └── support/
+│   │       └── chat.html
+│   ├── tests/
+│   ├── admin.py
+│   └── urls.py
+│
+├── scripts/
+│   └── evaluate_agent.py
+│
+├── evaluation/
+│
+├── docs/
+│   └── PERFORMANCE_EVALUATION.md
+│
+├── .env.example
+├── requirements.txt
+├── manage.py
+└── README.md
+
 ```
 
 ## 13. Future Improvements

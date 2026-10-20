@@ -18,7 +18,7 @@ os.environ.setdefault(
 )
 django.setup()
 
-from support.services.agent_service import run_agent
+from support.services.chat.agent_service import run_agent
 
 
 TEST_CASES = [
@@ -51,6 +51,27 @@ TEST_CASES = [
         "id": "ORDER-03",
         "question": "Can you check order ORD-9999?",
         "expected_tools": ["lookup_order"],
+    },
+    {
+        "id": "TICKET-01",
+        "question": (
+            "Please create a support ticket titled "
+            "'Damaged delivery' because my package arrived damaged."
+        ),
+        "expected_tools": ["create_support_ticket"],
+    },
+    {
+        "id": "TICKET-02",
+        "question": (
+            "I need human assistance with order ORD-1001. "
+            "Please open a support ticket for me."
+        ),
+        "expected_tools": ["create_support_ticket"],
+    },
+    {
+        "id": "AMBIGUOUS-01",
+        "question": "I have a problem with my order.",
+        "expected_tools": [],
     },
     {
         "id": "GENERAL-01",
@@ -89,7 +110,7 @@ def run_evaluation():
     print("=" * 60)
 
     with patch(
-        "support.services.agent_service.create_support_ticket",
+        "support.services.chat.agent_tools.create_support_ticket",
         return_value={
             "success": False,
             "error": "Ticket creation disabled during evaluation.",
@@ -203,9 +224,9 @@ def run_evaluation():
     print(f"API failures: {api_failure_count}")
 
     if accuracy is not None:
-        print(f"Tool selection accuracy: {accuracy:.2f}%")
+        print(f"Tool selection accuracy (completed cases only): {accuracy:.2f}%")
     else:
-        print("Tool selection accuracy: N/A")
+        print("Tool selection accuracy (completed cases only): N/A")
 
     if latencies:
         print(
